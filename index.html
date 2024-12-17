@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Period with History</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+            background-size: 400% 400%;
+            animation: rainbow 10s infinite;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #container {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .period {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .timer {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .result {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .history {
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid white;
+            padding: 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+            background: #ff5722;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #e64a19;
+        }
+
+        button.clear {
+            background: #4caf50;
+        }
+
+        button.clear:hover {
+            background: #388e3c;
+        }
+
+        button.delete {
+            background: #f44336;
+        }
+
+        button.delete:hover {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="period" id="period">Period: YYYYMMDD10001</div>
+        <div class="timer" id="timer">00 : 30</div>
+        <div class="result" id="result">Result: BIG</div>
+        <div class="history" id="history"></div>
+        <button class="clear" onclick="clearHistory()">Clear History</button>
+        <button class="delete" onclick="deleteHistory()">Delete History</button>
+    </div>
+
+    <script>
+        let historyElement = document.getElementById("history");
+        let periodElement = document.getElementById("period");
+        let timerElement = document.getElementById("timer");
+        let resultElement = document.getElementById("result");
+        let seconds = 30;
+
+        function updateTimer() {
+            seconds--;
+            if (seconds < 0) {
+                seconds = 29; // Reset the timer
+                updatePeriodAndResult();
+            }
+            timerElement.textContent = `00 : ${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function updatePeriodAndResult() {
+            const now = new Date();
+            const period = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}1000${(now.getHours() * 60 + now.getMinutes()) * 2 + (30 - seconds) / 30}`;
+            const result = Math.random() > 0.5 ? "BIG" : "SMALL";
+
+            periodElement.textContent = `Period: ${period}`;
+            resultElement.textContent = `Result: ${result}`;
+            addHistoryEntry(period, result);
+        }
+
+        function addHistoryEntry(period, result) {
+            const entry = document.createElement("div");
+            entry.textContent = `Period: ${period} - Result: ${result}`;
+            historyElement.prepend(entry);
+        }
+
+        function clearHistory() {
+            historyElement.innerHTML = "";
+        }
+
+        function deleteHistory() {
+            historyElement.innerHTML = "";
+            localStorage.removeItem("history");
+        }
+
+        // Start the timer
+        setInterval(updateTimer, 1000);
+        updatePeriodAndResult(); // Initial call
+    </script>
+</body>
+</html>
